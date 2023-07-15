@@ -5,6 +5,7 @@ import ProjectForm from "../components/ProjectForm";
 import ProjectItem from "../components/ProjectItem";
 import Spinner from "../components/Spinner";
 import { getProjects, reset } from "../features/projects/projectSlice";
+import { FaTrashAlt } from "react-icons/fa";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -52,7 +53,24 @@ function Dashboard() {
             ))}
           </div>
         ) : (
-          <h4>You have not set any projects</h4>
+            <h4
+              style={{
+                textAlign: "center",
+                marginTop: "4rem",
+                color: "#ccc",
+              }}
+            >
+              <FaTrashAlt
+                style={{
+                  fontSize: "2rem",
+                  color: "#ccc",
+                  display: "block",
+                  margin: "auto",
+                }}
+
+              />
+              You have not set any projects
+            </h4>
         )}
       </section>
     </>

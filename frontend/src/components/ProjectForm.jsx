@@ -16,19 +16,20 @@ function ProjectForm() {
   return (
     <section className='form'>
       <form onSubmit={onSubmit}>
-        <div className='form-group'>
-          <button className='btn add' type='submit'>
-           <FaPlus /> Add Project
-          </button>
-        </div>
-        <div className='form-group'>
+        <div className='form-ipute'>
           <input
+            className='input'
             type='text'
             name='text'
             id='text'
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
+        </div>
+        <div className='form-group'>
+          <button className='btn add' type='submit'>
+            <FaPlus /> Add Project
+          </button>
         </div>
       </form>
     </section>
