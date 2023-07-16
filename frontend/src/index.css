@@ -123,8 +123,9 @@ h3 {
 
 .projects {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* grid-template-columns: repeat(2, 1fr); */
   gap: 10px;
+  width: 100%;
 }
 
 .project {
@@ -204,6 +205,22 @@ h3 {
   text-align: left;
   display: block;
   margin: 0 0 5px 3px;
+}
+.add-layer-button {
+  padding: 10px 20px;
+  border: 1px solid rgb(2, 116, 25);
+  border-radius: 10px;
+  background: rgb(2, 116, 25);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: center;
+  appearance: button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: inline-block;
 }
 
 .btn {
