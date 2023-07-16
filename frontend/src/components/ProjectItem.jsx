@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { deleteProject, updateProject } from "../features/projects/projectSlice";
+import randomColor from "randomcolor";
+import { FaPlus, FaMinus } from "react-icons/fa";
 
 function ProjectItem({ project })
 {
@@ -8,6 +10,7 @@ function ProjectItem({ project })
   const [text, setText] = useState(project.text);
   const [layers, setLayers] = useState([]);
   const [currentTime, setCurrentTime] = useState(0);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const timelineRef = React.useRef(null);
   const dispatch = useDispatch();
 
@@ -16,6 +19,7 @@ function ProjectItem({ project })
     const newLayer = {
       name: `Layer ${layers.length + 1}`,
       duration: 5,
+      color: getRandomColor(),
     };
     setLayers([...layers, newLayer]);
   };
@@ -25,42 +29,31 @@ function ProjectItem({ project })
     const newX = event.clientX;
     const layerIndex = event.target.dataset.layerIndex;
     const newLayers = [...layers];
-    newLayers[layerIndex].duration = newX / 20;
+    newLayers[layerIndex].duration = newX / (20 * zoomLevel);
     setLayers(newLayers);
   };
 
   const handleZoomIn = () =>
   {
-    const newLayers = [...layers];
-    newLayers.forEach((layer) => (layer.duration *= 2));
-    setLayers(newLayers);
-
-    setCurrentTime(currentTime * 2);
-
-    const timelineRect = timelineRef.current.getBoundingClientRect();
-    const newTimelineWidth = timelineRect.width * 2;
-    timelineRef.current.style.width = `${newTimelineWidth}px`;
-
-    const newTimelineLayerWidth = newTimelineWidth / layers.length;
-    const timelineLayers = document.getElementsByClassName("timeline-layer");
-    for (let i = 0; i < timelineLayers.length; i++)
-    {
-      timelineLayers[i].style.width = `${newTimelineLayerWidth}px`;
-    }
-
-    
+    const newZoomLevel = zoomLevel * 2;
+    setZoomLevel(newZoomLevel);
+    updateTimelineWidth(newZoomLevel);
   };
 
   const handleZoomOut = () =>
   {
-    const newLayers = [...layers];
-    newLayers.forEach((layer) => (layer.duration /= 2));
-    setLayers(newLayers);
+    if (zoomLevel > 1)
+    {
+      const newZoomLevel = zoomLevel / 2;
+      setZoomLevel(newZoomLevel);
+      updateTimelineWidth(newZoomLevel);
+    }
+  };
 
-    setCurrentTime(currentTime / 2);
-
+  const updateTimelineWidth = (newZoomLevel) =>
+  {
     const timelineRect = timelineRef.current.getBoundingClientRect();
-    const newTimelineWidth = timelineRect.width / 2;
+    const newTimelineWidth = timelineRect.width * newZoomLevel;
     timelineRef.current.style.width = `${newTimelineWidth}px`;
 
     const newTimelineLayerWidth = newTimelineWidth / layers.length;
@@ -69,14 +62,6 @@ function ProjectItem({ project })
     {
       timelineLayers[i].style.width = `${newTimelineLayerWidth}px`;
     }
-    
-  };
-
-  const handleMoveCurrentTime = (event) =>
-  {
-    const timelineRect = timelineRef.current.getBoundingClientRect();
-    const currentTimePosition = event.clientX - timelineRect.left;
-    setCurrentTime(currentTimePosition / 20);
   };
 
   const handleDeleteLayer = (layerIndex) =>
@@ -84,6 +69,16 @@ function ProjectItem({ project })
     const newLayers = [...layers];
     newLayers.splice(layerIndex, 1);
     setLayers(newLayers);
+  };
+
+  const handleMoveCurrentTime = (event) =>
+  {
+    const timelineRect = timelineRef.current.getBoundingClientRect();
+    const timelineX = timelineRect.x;
+    const timelineWidth = timelineRect.width;
+    const mouseX = event.clientX;
+    const newCurrentTime = (mouseX - timelineX) / timelineWidth;
+    setCurrentTime(newCurrentTime);
   };
 
   const onSubmit = async (e) =>
@@ -95,49 +90,61 @@ function ProjectItem({ project })
     div.style.display = "none";
   };
 
+  const getRandomColor = () =>
+  {
+    return randomColor();
+  };
+
   return (
     <div className="project">
-      <div className="title">{text}</div>
+      <div className="date">
+        {new Date(project.createdAt).toLocaleString("en-US")}
+      </div>
+      <div className="project-text">{text}</div>
       <button onClick={handleAddLayer} className="add-layer-button">
         Add new layer
       </button>
-      <div className="layer-stack">
-        {layers.map((layer, index) => (
-          <div key={index} className="layer">
-            <span>{layer.name} - {layer.duration} sec</span>
-            <div
-              className="resize-icon"
-              onMouseDown={handleResizeIconDrag}
-              data-layerIndex={index}
-              style={{ cursor: "col-resize" }}
-            ></div>
-            <button onClick={() => handleDeleteLayer(index)}>Delete</button>
-          </div>
-        ))}
-      </div>
-      <div className="layer-stack-scrollbar">
-        <div className="layer-stack-scrollbar-thumb"></div>
-      </div>
-      <button onClick={handleZoomIn} className="zoom-in-button">
-        Zoom In
+      <button onClick={handleZoomIn} className="zoom-in-icon">
+        <FaPlus />
       </button>
-      <button onClick={handleZoomOut} className="zoom-out-button">
-        Zoom Out
+      <button onClick={handleZoomOut} className="zoom-out-icon">
+        <FaMinus />
       </button>
       <div
         className="timeline"
         ref={timelineRef}
         onMouseDown={handleMoveCurrentTime}
-        style={{ width: layers.length > 0 ? layers.reduce((total, layer) => total + layer.duration, 0) * 20 : "100%" }}
+        style={{
+          width:
+            layers.length > 0
+              ? layers.reduce((total, layer) => total + layer.duration, 0) *
+              20 *
+              zoomLevel
+              : "100%",
+        }}
       >
         {layers.map((layer, index) => (
-          <div key={index} className="timeline-layer" style={{ width: layer.duration * 20 }}>
+          <div
+            key={index}
+            className="timeline-layer"
+            style={{
+              width: layer.duration * 20 * zoomLevel,
+              background: layer.color,
+            }}
+          >
             {layer.name}
+            <FaPlus
+              className="resize-icon"
+              data-layer-index={index}
+              draggable={true}
+              onDrag={handleResizeIconDrag}
+            />
+            <button onClick={() => handleDeleteLayer(index)}>Delete</button>
           </div>
         ))}
-        <div className="current-time" style={{ left: currentTime * 20 }}></div>
+        <div className="current-time" style={{ left: currentTime * 20 * zoomLevel }}></div>
       </div>
-      
+
       <button onClick={() => dispatch(deleteProject(project._id))} className="close">
         X
       </button>
@@ -153,10 +160,6 @@ function ProjectItem({ project })
       >
         Update
       </button>
-
-      <div className="date">
-        {new Date(project.createdAt).toLocaleString("en-US")}
-      </div>
       <form
         className="update-form"
         style={{ display: "none" }}

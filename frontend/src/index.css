@@ -43,41 +43,42 @@ h3 {
   text-align: center;
 }
 
-.logo{
-    font-size: 18px;
-    font-weight: 700;
-    color: rgb(2, 116, 25);
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgb(2, 116, 25);
 }
-.form-control{
-    width:100%;
-    padding: 10px;
-    border: 1px solid #e6e6e6;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-family: inherit;
 
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-family: inherit;
 }
-.update-form{
-    width: 100%;
-    padding: 3px;
-    border: 1px solid rgb(2, 116, 25);
-    
-    border-radius: 5px;
-    font-family: inherit;
-}
-.update-form1 {
+
+.update-form {
   width: 100%;
   padding: 3px;
   border: 1px solid rgb(2, 116, 25);
-
   border-radius: 5px;
   font-family: inherit;
 }
 
-.update-form1:hover{
-    background-color: rgb(2, 116, 25);
-    color: #fff;
+.update-form1 {
+  width: 100%;
+  padding: 3px;
+  border: 1px solid rgb(2, 116, 25);
+  border-radius: 5px;
+  font-family: inherit;
 }
+
+.update-form1:hover {
+  background-color: rgb(2, 116, 25);
+  color: #fff;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -120,6 +121,13 @@ h3 {
 .heading p {
   color: #828282;
 }
+.project-text {
+  alignItems: center;
+      marginBottom: 10px;
+      fontSize: 20px;
+      fontWeight: 700;
+
+}
 
 .projects {
   display: grid;
@@ -143,6 +151,7 @@ h3 {
   border: none;
   background: none;
 }
+
 .project .update {
   position: absolute;
   top: 10px;
@@ -152,7 +161,8 @@ h3 {
   border: none;
   background: none;
 }
-.title{
+
+.title {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 5px;
@@ -161,22 +171,19 @@ h3 {
 
 .form,
 .content {
-  width: 70%;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  
+  padding: 0 20px;
+  text-align: center;
 }
-.date{
-   border: 5px  solid rgb(255,111,0);
-   background-color: rgb(255, 111, 0);
-    border-radius: 5px;
-    margin-bottom: 5px;
-    font-family: inherit;
-    padding: 5px;
+
+.date {
+  border-radius: 5px;
 }
 
 .form-group {
   margin-bottom: 10px;
-
 }
 
 .form-group input,
@@ -189,9 +196,11 @@ h3 {
   margin-bottom: 10px;
   font-family: inherit;
 }
+
 .form-ipute {
   width: 30%;
 }
+
 .input {
   width: 100%;
   padding: 10px;
@@ -206,27 +215,10 @@ h3 {
   display: block;
   margin: 0 0 5px 3px;
 }
-.add-layer-button {
-  padding: 10px 20px;
-  border: 1px solid rgb(2, 116, 25);
-  border-radius: 10px;
-  background: rgb(2, 116, 25);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 400;
-  cursor: pointer;
-  text-align: center;
-  appearance: button;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  display: inline-block;
-}
 
 .btn {
   padding: 10px 20px;
   border: 1px solid rgb(2, 116, 25);
-
   border-radius: 10px;
   background: rgb(2, 116, 25);
   color: #fff;
@@ -240,10 +232,12 @@ h3 {
   justify-content: center;
   display: inline-block;
 }
-.dropdown{
+
+.dropdown {
   display: inline-block;
 }
-.btnuser{
+
+.btnuser {
   padding: 10px 20px;
   border: 1px solid rgb(2, 116, 25);
   border-radius: 10px;
@@ -256,7 +250,6 @@ h3 {
   justify-content: center;
   display: inline-block;
   margin-right: 10px;
-
 }
 
 .btn svg {
