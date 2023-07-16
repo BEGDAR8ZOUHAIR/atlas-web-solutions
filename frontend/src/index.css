@@ -121,13 +121,6 @@ h3 {
 .heading p {
   color: #828282;
 }
-.project-text {
-  alignItems: center;
-      marginBottom: 10px;
-      fontSize: 20px;
-      fontWeight: 700;
-
-}
 
 .projects {
   display: grid;
@@ -268,6 +261,55 @@ h3 {
 
 .btn:hover {
   transform: scale(0.98);
+}
+
+.add-layer-button {
+  /* position: absolute; */
+  top: 0;
+  right: 0;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgb(2, 116, 25);
+  border: 1px solid tomato;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zoom-out-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+.zoom-in-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+.timeline-container .timeline {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #e6e6e6;
+  margin-bottom: 20px;
+  width: 100%;
+
+}
+.timeline-container .timeline .timeline-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #e6e6e6;
+  margin-bottom: 20px;
+  /* width: 100%; */
 }
 
 .loadingSpinnerContainer {

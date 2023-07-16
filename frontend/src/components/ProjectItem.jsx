@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { deleteProject, updateProject } from "../features/projects/projectSlice";
 import randomColor from "randomcolor";
@@ -11,8 +11,20 @@ function ProjectItem({ project })
   const [layers, setLayers] = useState([]);
   const [currentTime, setCurrentTime] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [movingLayerIndex, setMovingLayerIndex] = useState(null);
   const timelineRef = React.useRef(null);
   const dispatch = useDispatch();
+
+  // Function to update the current time
+  useEffect(() =>
+  {
+    const interval = setInterval(() =>
+    {
+      const currentTime = Date.now() / 1000;
+      setCurrentTime(currentTime);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAddLayer = () =>
   {
@@ -37,23 +49,9 @@ function ProjectItem({ project })
   {
     const newZoomLevel = zoomLevel * 2;
     setZoomLevel(newZoomLevel);
-    updateTimelineWidth(newZoomLevel);
-  };
 
-  const handleZoomOut = () =>
-  {
-    if (zoomLevel > 1)
-    {
-      const newZoomLevel = zoomLevel / 2;
-      setZoomLevel(newZoomLevel);
-      updateTimelineWidth(newZoomLevel);
-    }
-  };
-
-  const updateTimelineWidth = (newZoomLevel) =>
-  {
     const timelineRect = timelineRef.current.getBoundingClientRect();
-    const newTimelineWidth = timelineRect.width * newZoomLevel;
+    const newTimelineWidth = timelineRect.width * 2;
     timelineRef.current.style.width = `${newTimelineWidth}px`;
 
     const newTimelineLayerWidth = newTimelineWidth / layers.length;
@@ -64,21 +62,56 @@ function ProjectItem({ project })
     }
   };
 
-  const handleDeleteLayer = (layerIndex) =>
+  const handleZoomOut = () =>
   {
+    if (zoomLevel > 1)
+    {
+      const newZoomLevel = zoomLevel / 2;
+      setZoomLevel(newZoomLevel);
+
+      const timelineRect = timelineRef.current.getBoundingClientRect();
+      const newTimelineWidth = timelineRect.width / 2;
+      timelineRef.current.style.width = `${newTimelineWidth}px`;
+
+      const newTimelineLayerWidth = newTimelineWidth / layers.length;
+      const timelineLayers = document.getElementsByClassName("timeline-layer");
+      for (let i = 0; i < timelineLayers.length; i++)
+      {
+        timelineLayers[i].style.width = `${newTimelineLayerWidth}px`;
+      }
+    }
+  };
+  const handleMoveCurrentTime = (event) =>
+  {
+    const timelineRect = timelineRef.current.getBoundingClientRect();
+    const timelineX = timelineRect.x;
+    const mouseX = event.clientX;
+    const newCurrentTime = (mouseX - timelineX) / (20 * zoomLevel);
+    setCurrentTime(newCurrentTime);
+  };
+  
+  const handleDeleteLayer = (event) =>
+  {
+    const layerIndex = event.target.dataset.layerIndex;
     const newLayers = [...layers];
     newLayers.splice(layerIndex, 1);
     setLayers(newLayers);
   };
 
-  const handleMoveCurrentTime = (event) =>
+  const handleMoveLayer = (event) =>
   {
-    const timelineRect = timelineRef.current.getBoundingClientRect();
-    const timelineX = timelineRect.x;
-    const timelineWidth = timelineRect.width;
-    const mouseX = event.clientX;
-    const newCurrentTime = (mouseX - timelineX) / timelineWidth;
-    setCurrentTime(newCurrentTime);
+    if (movingLayerIndex !== null)
+    {
+      const layerIndex = movingLayerIndex;
+      const newLayers = [...layers];
+      const layer = newLayers[layerIndex];
+      const timelineRect = timelineRef.current.getBoundingClientRect();
+      const timelineX = timelineRect.x;
+      const mouseX = event.clientX;
+      const newLayerDuration = (mouseX - timelineX) / (20 * zoomLevel);
+      layer.duration = newLayerDuration >= 0 ? newLayerDuration : 0;
+      setLayers(newLayers);
+    }
   };
 
   const onSubmit = async (e) =>
@@ -100,7 +133,15 @@ function ProjectItem({ project })
       <div className="date">
         {new Date(project.createdAt).toLocaleString("en-US")}
       </div>
-      <div className="project-text">{text}</div>
+      <div
+        style={{
+          fontSize: "20px",
+          fontWeight: "bold",
+          marginBottom: "10px",
+        }}
+      >
+        {text}
+      </div>
       <button onClick={handleAddLayer} className="add-layer-button">
         Add new layer
       </button>
@@ -114,6 +155,8 @@ function ProjectItem({ project })
         className="timeline"
         ref={timelineRef}
         onMouseDown={handleMoveCurrentTime}
+        onMouseMove={handleMoveLayer}
+        onMouseUp={() => setMovingLayerIndex(null)}
         style={{
           width:
             layers.length > 0
@@ -131,6 +174,12 @@ function ProjectItem({ project })
               width: layer.duration * 20 * zoomLevel,
               background: layer.color,
             }}
+            data-layer-index={index}
+            onMouseDown={(event) =>
+            {
+              setMovingLayerIndex(index);
+              handleMoveLayer(event);
+            }}
           >
             {layer.name}
             <FaPlus
@@ -139,10 +188,20 @@ function ProjectItem({ project })
               draggable={true}
               onDrag={handleResizeIconDrag}
             />
-            <button onClick={() => handleDeleteLayer(index)}>Delete</button>
+            <button
+              onClick={handleDeleteLayer}
+              data-layer-index={index} // Pass the index as a data attribute
+            >
+              Delete
+            </button>
           </div>
         ))}
-        <div className="current-time" style={{ left: currentTime * 20 * zoomLevel }}></div>
+        <div
+          className="current-time-bar"
+          style={{
+            left: `${currentTime * 100}%`,
+          }}
+        ></div>
       </div>
 
       <button onClick={() => dispatch(deleteProject(project._id))} className="close">
@@ -174,7 +233,7 @@ function ProjectItem({ project })
           className="form-control"
           placeholder="Update your project"
         />
-        <button className="update-form1" type="submit-form">
+        <button className="update-form1" type="submit">
           Update
         </button>
       </form>
